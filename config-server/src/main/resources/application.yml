@@ -1,0 +1,16 @@
+server:
+  port: 8888
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          search-paths: '{application}/{profile}'
+          uri: 'https://github.com/amoraes/spring-cloud-ecs-example-config.git'

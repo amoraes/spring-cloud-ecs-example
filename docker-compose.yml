@@ -1,0 +1,15 @@
+version: '3'
+services:
+
+  # basic infrastructure
+  config-server:
+    container_name: config-server
+    image: 'amoraes/spring-cloud-ecs-example-config-server:latest'
+    network_mode: bridge
+    ports:
+    - '8888:8888'
+    environment:
+    - LOCAL_DOCKER_ENV=true
+    - SPRING_PROFILES_ACTIVE=docker
+    - JAVA_OPTIONS=-Xmx128m
+    - HOST_DOMAIN=localhost.local.com

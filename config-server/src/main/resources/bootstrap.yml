@@ -1,0 +1,5 @@
+application:
+  name: config-server
+spring:
+  application:
+    name: ${application.name}
