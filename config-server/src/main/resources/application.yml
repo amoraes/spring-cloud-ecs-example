@@ -12,5 +12,5 @@ spring:
     config:
       server:
         git:
-          search-paths: '{application}/{profile}'
+          search-paths: '{application}'
           uri: 'https://github.com/amoraes/spring-cloud-ecs-example-config.git'
