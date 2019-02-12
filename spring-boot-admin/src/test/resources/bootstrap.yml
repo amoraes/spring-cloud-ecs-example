@@ -1,6 +1,8 @@
+application:
+  name: 'spring-boot-admin'
 spring:
   application:
-    name: 'eureka'
+    name: '${application.name}'
   cloud:
     config:
       uri: 'http://none'

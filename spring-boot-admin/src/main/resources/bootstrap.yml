@@ -1,0 +1,8 @@
+application:
+  name: 'spring-boot-admin'
+spring:
+  application:
+    name: '${application.name}'
+  cloud:
+    config:
+      fail-fast: true
