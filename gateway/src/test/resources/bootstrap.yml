@@ -1,0 +1,8 @@
+application:
+  name: 'gateway'
+spring:
+  application:
+    name: '${application.name}'
+  cloud:
+    config:
+      fail-fast: false

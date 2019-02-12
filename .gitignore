@@ -37,7 +37,6 @@ hs_err_pid*
 .idea/**/shelf
 .idea/**
 api/target
-api/epc-html-microservice-api.iml
 
 # Generated files
 .idea/**/contentModel.xml

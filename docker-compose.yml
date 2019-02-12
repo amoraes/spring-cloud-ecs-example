@@ -31,6 +31,22 @@ services:
     - server.port=8761
     - spring.cloud.config.uri=http://localhost.local.com:8888
 
+  gateway:
+    container_name: example-gateway
+    image: 'amoraes/spring-cloud-ecs-example-gateway:latest'
+    network_mode: bridge
+    ports:
+    - '9090:9090'
+    depends_on:
+    - eureka
+    environment:
+    - LOCAL_DOCKER_ENV=true
+    - SPRING_PROFILES_ACTIVE=docker
+    - JAVA_OPTIONS=-Xmx256m
+    - HOST_DOMAIN=localhost.local.com
+    - server.port=9090
+    - spring.cloud.config.uri=http://localhost.local.com:8888
+
   spring-boot-admin:
     container_name: example-spring-boot-admin
     image: 'amoraes/spring-cloud-ecs-example-spring-boot-admin:latest'
@@ -46,3 +62,5 @@ services:
     - HOST_DOMAIN=localhost.local.com
     - server.port=9001
     - spring.cloud.config.uri=http://localhost.local.com:8888
+
+
