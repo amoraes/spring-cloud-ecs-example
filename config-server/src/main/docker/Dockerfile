@@ -1,5 +1,4 @@
 FROM openjdk:8-jdk-alpine
-VOLUME /tmp
 EXPOSE 8080
 RUN /bin/sh -c "apk add --no-cache curl"
 RUN /bin/sh -c "apk add --no-cache jq"

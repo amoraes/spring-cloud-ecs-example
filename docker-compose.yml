@@ -13,3 +13,18 @@ services:
     - SPRING_PROFILES_ACTIVE=docker
     - JAVA_OPTIONS=-Xmx128m
     - HOST_DOMAIN=localhost.local.com
+
+  eureka:
+    container_name: eureka
+    image: 'amoraes/spring-cloud-ecs-example-eureka:latest'
+    network_mode: bridge
+    ports:
+    - '8761:8761'
+    depends_on:
+    - config-server
+    environment:
+    - LOCAL_DOCKER_ENV=true
+    - SPRING_PROFILES_ACTIVE=docker
+    - JAVA_OPTIONS=-Xmx128m
+    - HOST_DOMAIN=localhost.local.com
+    - spring.cloud.config.uri=http://localhost.local.com:8888
