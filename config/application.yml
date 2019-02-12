@@ -1,0 +1,24 @@
+server:
+  servlet:
+    context-path: ''
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+spring:
+  sleuth:
+    web:
+      additional-skip-pattern: '${server.servlet.context-path}/actuator.*|${server.servlet.context-path}/swagger-resources.*|${server.servlet.context-path}/webjars/.*|/.*/api-docs|/docs'
+
+# Ribbon and Hystrix general configuration
+ribbon:
+  eureka:
+    enabled: true
+  ReadTimeout: 1000 # Default timeout
+
+hystryx:
+  command:
+    execution.isolation.thread.timeoutInMilliseconds: 3000 # overall timeout

@@ -1,0 +1,23 @@
+server:
+  servlet:
+    context-path: ''
+
+logging:
+  file: '/var/log/${spring.application.name}.log'
+
+eureka:
+  instance:
+    hostname: '${HOST_DOMAIN}'
+    preferIpAddress: false
+    instanceId: '${eureka.instance.hostname}:${server.port}'
+    homePageUrl: 'http://${eureka.instance.hostname}:${server.port}'
+    healthCheckUrl: 'http://${eureka.instance.hostname}:${server.port}${server.servlet.context-path}/actuator/health'
+    metadataMap:
+      management:
+        context-path: ${server.servlet.context-path}/actuator
+        port: ${server.port}
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: 'http://${HOST_DOMAIN}:8761/eureka'

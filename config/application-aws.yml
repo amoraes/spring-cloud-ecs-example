@@ -1,0 +1,24 @@
+server:
+  port: 8080
+  servlet:
+    context-path: ''
+
+logging:
+  file: '/var/log/${spring.application.name}.log'
+
+eureka:
+  instance:
+    ipAddress: '${HOST_IP}'
+    nonSecurePort: '${HOST_PORT}'
+    preferIpAddress: true
+    instanceId: '${HOST_IP}:${HOST_PORT}'
+    healthCheckUrl: 'http://${HOST_IP}:${HOST_PORT}${server.servlet.context-path}/actuator/health'
+    metadataMap:
+      management:
+        context-path: '${server.servlet.context-path}/actuator'
+        port: '${HOST_PORT}'
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: 'http://eureka-server-1.local:8761/eureka-server/eureka,http://eureka-server-2.local:8761/eureka-server/eureka'
