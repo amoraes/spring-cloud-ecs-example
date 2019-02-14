@@ -1,0 +1,8 @@
+application:
+  name: 'weather-service'
+spring:
+  application:
+    name: '${application.name}'
+  cloud:
+    config:
+      fail-fast: true
