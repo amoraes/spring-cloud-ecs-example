@@ -3,6 +3,7 @@ package com.github.amoraes.helloservice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,7 +17,8 @@ public class HelloEndpoint {
     }
 
     @GetMapping
-    public ResponseEntity<String> greeting(String name, String location) {
+    public ResponseEntity<String> greeting(@RequestParam(name = "name", required = true) String name,
+                                           @RequestParam(name = "location") String location) {
         if (location == null) {
             return ResponseEntity.ok(String.format("Hello %s", name));
         } else {
