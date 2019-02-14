@@ -29,6 +29,8 @@
     <module>eureka</module>
     <module>gateway</module>
     <module>spring-boot-admin</module>
+    <module>microservice-autoconfiguration</module>
+    <module>hello-service</module>
   </modules>
 
 </project>
