@@ -18,7 +18,11 @@ public class ExternalWeatherService {
     @Value("${weather.api.key}")
     private String externalApiKey;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
+
+    public ExternalWeatherService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     public String getTemperatureInCelsius(String location) {
         Map<String, String> queryParams = new HashMap<>();
