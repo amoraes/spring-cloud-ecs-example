@@ -9,9 +9,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/greeting")
 public class HelloEndpoint {
 
+    private WeatherServiceClient weatherServiceClient;
+
+    public HelloEndpoint(WeatherServiceClient weatherServiceClient) {
+        this.weatherServiceClient = weatherServiceClient;
+    }
+
     @GetMapping
-    public ResponseEntity<String> greeting(String name) {
-        return ResponseEntity.ok(String.format("Hello %s", name));
+    public ResponseEntity<String> greeting(String name, String location) {
+        if (location == null) {
+            return ResponseEntity.ok(String.format("Hello %s", name));
+        } else {
+            String temperature = weatherServiceClient.getTemperature(location);
+            return ResponseEntity.ok(String.format("Hello %s, temperature now in %s: %s", name, location, temperature));
+        }
     }
 
 }
