@@ -63,4 +63,25 @@ services:
     - server.port=9001
     - spring.cloud.config.uri=http://localhost.local.com:8888
 
+  zipkin:
+    container_name: example-zipkin
+    image:   openzipkin/zipkin
+    network_mode: bridge
+    ports:
+    - 9411:9411
 
+  hello-service:
+    container_name: example-hello-service
+    image: 'amoraes/spring-cloud-ecs-example-hello-service:latest'
+    network_mode: bridge
+    ports:
+    - '9800:9800'
+    depends_on:
+    - eureka
+    environment:
+    - LOCAL_DOCKER_ENV=true
+    - SPRING_PROFILES_ACTIVE=docker
+    - JAVA_OPTIONS=-Xmx128m
+    - HOST_DOMAIN=localhost.local.com
+    - server.port=9800
+    - spring.cloud.config.uri=http://localhost.local.com:8888

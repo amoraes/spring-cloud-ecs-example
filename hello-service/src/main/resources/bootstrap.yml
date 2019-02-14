@@ -1,0 +1,8 @@
+application:
+  name: 'hello-service'
+spring:
+  application:
+    name: '${application.name}'
+  cloud:
+    config:
+      fail-fast: true
