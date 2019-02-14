@@ -85,3 +85,20 @@ services:
     - HOST_DOMAIN=localhost.local.com
     - server.port=9800
     - spring.cloud.config.uri=http://localhost.local.com:8888
+
+  weather-service:
+    container_name: example-weather-service
+    image: 'amoraes/spring-cloud-ecs-example-weather-service:latest'
+    network_mode: bridge
+    ports:
+    - '9810:9810'
+    depends_on:
+    - eureka
+    environment:
+    - LOCAL_DOCKER_ENV=true
+    - SPRING_PROFILES_ACTIVE=docker
+    - JAVA_OPTIONS=-Xmx128m
+    - HOST_DOMAIN=localhost.local.com
+    - server.port=9800
+    - spring.cloud.config.uri=http://localhost.local.com:8888
+    - weather.api.key=replacewithavalidkey
