@@ -1,5 +1,6 @@
 application:
-  name: 'weather-service'
+  name: 'weather-service-v${application.version}'
+  version: 1
 spring:
   application:
     name: '${application.name}'

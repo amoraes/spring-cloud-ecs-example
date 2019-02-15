@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1/weather")
+@RequestMapping("/")
 public class WeatherEndpoint {
 
     private ExternalWeatherService externalWeatherService;

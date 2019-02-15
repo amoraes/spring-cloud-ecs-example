@@ -99,6 +99,6 @@ services:
     - SPRING_PROFILES_ACTIVE=docker
     - JAVA_OPTIONS=-Xmx128m
     - HOST_DOMAIN=localhost.local.com
-    - server.port=9800
+    - server.port=9810
     - spring.cloud.config.uri=http://localhost.local.com:8888
-    - weather.api.key=replacewithavalidkey
+    - weather.api.key=57c74e66add4d823ad7e93285390eeb0
