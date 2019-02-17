@@ -1,0 +1,84 @@
+Description: ECS task and service for Configuration Server
+
+Resources:
+
+  Task:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: 'config-server'
+      ContainerDefinitions:
+      - Name: 'config-server'
+        Essential: 'true'
+        Image: {{ Image }}
+        Memory: {{ Memory }}
+        HealthCheck:
+          Command: [ 'CMD-SHELL', 'curl -f http://localhost:8080{{ AppContextPath }}/actuator/health | grep UP || exit 1' ]
+          Interval: 10
+          Retries: 3
+          StartPeriod: 60
+          Timeout: 5
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !ImportValue EPCMicroservicesCloudWatchLogGroup
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: {{ Application }}
+        Environment:
+        - Name: SPRING_PROFILES_ACTIVE
+          Value: '{{ SpringProfiles }}'
+        - Name: 'spring.cloud.config.uri'
+          Value: !Join ['', [ 'http://', !ImportValue InternalALBDomain, '/config-server' ]]
+{% if JavaOptions %}
+        - Name: JAVA_OPTIONS
+          Value: '{{ JavaOptions }}'
+{% endif %}
+        - Name: 'spring.redis.host'
+          Value: !ImportValue EPCCacheAddress
+        PortMappings:
+        - ContainerPort: 8080
+
+  Service:
+    Type: AWS::ECS::Service
+{% if ALB == true %}
+    DependsOn: ListenerRule
+{% endif %}
+    Properties:
+      Cluster: !ImportValue EPCMicroservicesECSCluster
+      DesiredCount: {{ DesiredTasksCount }}
+      TaskDefinition: !Ref Task
+{% if ALB == true %}
+      HealthCheckGracePeriodSeconds: 30
+      LoadBalancers:
+      - ContainerName: {{ Application }}
+        ContainerPort: 8080
+        TargetGroupArn: !Ref TargetGroup
+{% endif %}
+
+{% if ALB == true %}
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      TargetType: instance
+      HealthCheckPath: {{ TargetGroupHealthCheckPath }}
+      Port: 80
+      Protocol: HTTP
+      VpcId: !ImportValue VPC
+
+  ListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+      - Type: forward
+        TargetGroupArn:
+          Ref: TargetGroup
+      Conditions:
+      - Field: path-pattern
+        Values:
+        - {{ ListenerRulePath }}
+{% if ALBScheme == 'internal' %}
+      ListenerArn: !ImportValue InternalALBHttpListernArn
+{% else %}
+      ListenerArn: !ImportValue ALBHTTPSListernArn
+{% endif %}
+      Priority: {{ ListenerRulePriority }}
+{% endif %}
