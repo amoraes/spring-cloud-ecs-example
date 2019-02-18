@@ -1,4 +1,4 @@
-Description: ECS task and service for Configuration Server
+Description: ECS task and service for API Gateway (Zuul Proxy)
 
 Parameters:
 
@@ -10,14 +10,14 @@ Resources:
   Task:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: 'example-config-server'
+      Family: example-gateway
       ContainerDefinitions:
-      - Name: 'config-server'
+      - Name: gateway
         Essential: 'true'
-        Image: 'amoraes/spring-cloud-ecs-example-config-server:latest'
+        Image: 'amoraes/spring-cloud-ecs-example-gateway:latest'
         Memory: 300
         HealthCheck:
-          Command: [ 'CMD-SHELL', 'curl -f http://localhost:8080/config-server/actuator/health | grep UP || exit 1' ]
+          Command: [ 'CMD-SHELL', 'curl -f http://localhost:8080/gateway/actuator/health | grep UP || exit 1' ]
           Interval: 10
           Retries: 3
           StartPeriod: 60
@@ -27,10 +27,12 @@ Resources:
           Options:
             awslogs-group: !ImportValue ExampleECSClusterCloudWatchLogGroup
             awslogs-region: !Ref 'AWS::Region'
-            awslogs-stream-prefix: 'config-server'
+            awslogs-stream-prefix: 'gateway'
         Environment:
         - Name: SPRING_PROFILES_ACTIVE
           Value: 'aws'
+        - Name: 'spring.cloud.config.uri'
+          Value: !Join ['', [ 'http://', !ImportValue ExampleECSClusterInternalALBDomain, '/config-server' ]]
         - Name: JAVA_OPTIONS
           Value: '-Xmx256m'
         PortMappings:
@@ -45,7 +47,7 @@ Resources:
       TaskDefinition: !Ref Task
       HealthCheckGracePeriodSeconds: 30
       LoadBalancers:
-      - ContainerName: 'config-server'
+      - ContainerName: 'gateway'
         ContainerPort: 8080
         TargetGroupArn: !Ref TargetGroup
 
@@ -53,7 +55,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       TargetType: instance
-      HealthCheckPath: '/config-server/actuator/health'
+      HealthCheckPath: '/gateway/actuator/health'
       Port: 80
       Protocol: HTTP
       VpcId: !Ref VPC
@@ -68,6 +70,6 @@ Resources:
       Conditions:
       - Field: path-pattern
         Values:
-        - '/config-server*'
+        - '/gateway*'
       ListenerArn: !ImportValue ExampleECSClusterInternalALBHttpListernArn
-      Priority: 10
+      Priority: 40

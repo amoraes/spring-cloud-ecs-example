@@ -1,0 +1,109 @@
+Description: Internal Application LoadBalancer
+
+Parameters:
+
+  VPC:
+    Type: 'AWS::EC2::VPC::Id'
+
+  PrivateSubnet1:
+    Type: 'AWS::EC2::Subnet::Id'
+
+  PrivateSubnet2:
+    Type: 'AWS::EC2::Subnet::Id'
+
+  AllowedCIDR:
+    Type: 'String'
+    Default: '0.0.0.0/0'
+
+  HostedZoneName:
+    Type: 'String'
+    Default: 'yourdomain.com.'
+
+  SubDomainName:
+    Type: 'String'
+    Default: 'xyz.yourdomain.com'
+
+Resources:
+  InternalALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Internal ALB security group
+      VpcId: !Ref VPC
+
+  HttpIngressRule:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref InternalALBSecurityGroup
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      CidrIp: !Ref AllowedCIDR
+
+  HttpListener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      Protocol: HTTP
+      DefaultActions:
+      - Type: forward
+        TargetGroupArn:
+          Ref: InternalTargetGroup
+      LoadBalancerArn: !Ref InternalALB
+      Port: 80
+
+  InternalALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Subnets:
+      - !Ref PrivateSubnet1
+      - !Ref PrivateSubnet2
+      Scheme: internal
+      LoadBalancerAttributes:
+      - Key: idle_timeout.timeout_seconds
+        Value: '50'
+      SecurityGroups:
+      - Ref: InternalALBSecurityGroup
+
+  DNSRecord:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: !Ref HostedZoneName
+      Comment: DNS name for Internal ALB.
+      RecordSets:
+      - Type: A
+        Name: !Ref SubDomainName
+        AliasTarget:
+          DNSName: !GetAtt InternalALB.DNSName
+          EvaluateTargetHealth: false
+          HostedZoneId: !GetAtt InternalALB.CanonicalHostedZoneID
+
+  InternalTargetGroup:
+      Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+      Properties:
+        Port: 80
+        Protocol: HTTP
+        VpcId: !Ref VPC
+
+Outputs:
+  ExampleECSClusterInternalALBHttpListernArn:
+    Description: Arn of Internal ALB Listener port 80
+    Value: !Ref HttpListener
+    Export:
+      Name: ExampleECSClusterInternalALBHttpListernArn
+
+  ExampleECSClusterInternalALBArn:
+    Description: Arn of Internal ALB
+    Value: !Ref InternalALB
+    Export:
+      Name: ExampleECSClusterInternalALBArn
+
+  ExampleECSClusterInternalALBDomain:
+    Description: Domain of Internal ALB
+    Value: !Ref SubDomainName
+    Export:
+      Name: ExampleECSClusterInternalALBDomain
+
+  ExampleECSClusterInternalTargetGroupArn:
+    Description: Arn of the Internal TargetGroup
+    Value: !Ref InternalTargetGroup
+    Export:
+      Name: ExampleECSClusterInternalTargetGroupArn

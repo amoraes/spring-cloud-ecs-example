@@ -1,0 +1,41 @@
+Description: ECS task and service for Weather Service
+
+Resources:
+
+  Task:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: example-weather-service
+      ContainerDefinitions:
+      - Name: weather-service
+        Essential: 'true'
+        Image: 'amoraes/spring-cloud-ecs-example-weather-service:latest'
+        Memory: 300
+        HealthCheck:
+          Command: [ 'CMD-SHELL', 'curl -f http://localhost:8080/actuator/health | grep UP || exit 1' ]
+          Interval: 10
+          Retries: 3
+          StartPeriod: 60
+          Timeout: 5
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !ImportValue ExampleECSClusterCloudWatchLogGroup
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: 'weather-service'
+        Environment:
+        - Name: SPRING_PROFILES_ACTIVE
+          Value: 'aws'
+        - Name: 'spring.cloud.config.uri'
+          Value: !Join ['', [ 'http://', !ImportValue ExampleECSClusterInternalALBDomain, '/config-server' ]]
+        - Name: JAVA_OPTIONS
+          Value: '-Xmx256m'
+        PortMappings:
+        - ContainerPort: 8080
+
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !ImportValue ExampleECSCluster
+      DesiredCount: 2
+      TaskDefinition: !Ref Task

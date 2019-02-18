@@ -1,0 +1,170 @@
+Description: ECS task and service for Eureka
+
+Parameters:
+
+  VPC:
+    Type: 'AWS::EC2::VPC::Id'
+
+  PrivateSubnet1:
+    Type: 'AWS::EC2::Subnet::Id'
+
+  PrivateSubnet2:
+    Type: 'AWS::EC2::Subnet::Id'
+
+Resources:
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      TargetType: ip
+      HealthCheckPath: '/eureka/actuator/health'
+      Port: 80
+      Protocol: HTTP
+      VpcId: !Ref VPC
+
+  ListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+      - Type: forward
+        TargetGroupArn:
+          Ref: TargetGroup
+      Conditions:
+      - Field: path-pattern
+        Values:
+        - '/eureka*'
+      ListenerArn: !ImportValue ExampleECSClusterInternalALBHttpListernArn
+      Priority: 20
+
+  Task1:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: example-eureka-1
+      NetworkMode: 'awsvpc'
+      ContainerDefinitions:
+      - Name: eureka
+        Essential: 'true'
+        Image: 'amoraes/spring-cloud-ecs-example-eureka:latest'
+        Memory: 300
+        HealthCheck:
+          Command: [ "CMD-SHELL", "curl -f http://localhost:8761/eureka/actuator/health || exit 1" ]
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !ImportValue ExampleECSClusterCloudWatchLogGroup
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: 'eureka'
+        Environment:
+        - Name: SPRING_PROFILES_ACTIVE
+          Value: 'aws'
+        - Name: SERVICE_HOSTNAME
+          Value: !Join ['', ['eureka-1.', !ImportValue ExampleECSClusterVPCPrivateDNSDomain]]
+        - Name: HOST_PORT
+          Value: 8761
+        - Name: 'spring.cloud.config.uri'
+          Value: !Join ['', [ 'http://', !ImportValue ExampleECSClusterInternalALBDomain, '/config-server' ]]
+        - Name: JAVA_OPTIONS
+          Value: '-Xmx256m'
+        PortMappings:
+        - ContainerPort: 8761
+          HostPort: 8761
+
+  Service1:
+    Type: AWS::ECS::Service
+    DependsOn: ListenerRule
+    Properties:
+      Cluster: !ImportValue ExampleECSCluster
+      DesiredCount: 1
+      HealthCheckGracePeriodSeconds: 30
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: [!ImportValue ExampleECSClusterAllowInternalSecurityGroup]
+          Subnets: [!Ref 'PrivateSubnet1', !Ref 'PrivateSubnet2']
+      LoadBalancers:
+      - ContainerName: 'eureka'
+        ContainerPort: 8761
+        TargetGroupArn: !Ref TargetGroup
+      TaskDefinition: !Ref Task1
+      ServiceRegistries:
+      - RegistryArn: !GetAtt ServiceDiscoveryService1.Arn
+
+  ServiceDiscoveryService1:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      Description: 'Discovery by private DNS for Eureka instance 1'
+      DnsConfig:
+        DnsRecords:
+        - Type: A
+          TTL: 60
+        NamespaceId: !ImportValue ExampleECSClusterVPCPrivateDNSNamespace
+      HealthCheckCustomConfig:
+        FailureThreshold: '1'
+      Name: eureka-1
+
+  Task2:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: example-eureka-2
+      NetworkMode: 'awsvpc'
+      ContainerDefinitions:
+      - Name: eureka
+        Essential: 'true'
+        Image: 'amoraes/spring-cloud-ecs-example-eureka:latest'
+        Memory: 300
+        HealthCheck:
+          Command: [ "CMD-SHELL", "curl -f http://localhost:8761/eureka/actuator/health || exit 1" ]
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !ImportValue ExampleECSClusterCloudWatchLogGroup
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: 'eureka'
+        Environment:
+        - Name: SPRING_PROFILES_ACTIVE
+          Value: 'aws'
+        - Name: SERVICE_HOSTNAME
+          Value: !Join ['', ['eureka-2.', !ImportValue ExampleECSClusterVPCPrivateDNSDomain]]
+        - Name: HOST_PORT
+          Value: 8761
+        - Name: 'spring.cloud.config.uri'
+          Value: !Join ['', [ 'http://', !ImportValue ExampleECSClusterInternalALBDomain, '/config-server' ]]
+        - Name: JAVA_OPTIONS
+          Value: '-Xmx256m'
+        PortMappings:
+        - ContainerPort: 8761
+          HostPort: 8761
+
+  Service2:
+    Type: AWS::ECS::Service
+    DependsOn: ListenerRule
+    Properties:
+      Cluster: !ImportValue ExampleECSCluster
+      DesiredCount: 1
+      HealthCheckGracePeriodSeconds: 30
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: [!ImportValue 'ExampleECSClusterAllowInternalSecurityGroup']
+          Subnets: [!Ref 'PrivateSubnet1', !Ref 'PrivateSubnet2']
+      LoadBalancers:
+      - ContainerName: 'eureka'
+        ContainerPort: 8761
+        TargetGroupArn: !Ref TargetGroup
+      TaskDefinition: !Ref Task2
+      ServiceRegistries:
+      - RegistryArn: !GetAtt ServiceDiscoveryService2.Arn
+
+  ServiceDiscoveryService2:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      Description: 'Discovery by private DNS for Eureka instance 2'
+      DnsConfig:
+        DnsRecords:
+        - Type: A
+          TTL: 60
+        NamespaceId: !ImportValue ExampleECSClusterVPCPrivateDNSNamespace
+      HealthCheckCustomConfig:
+        FailureThreshold: '1'
+      Name: eureka-2
+

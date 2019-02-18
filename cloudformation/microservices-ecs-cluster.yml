@@ -1,0 +1,180 @@
+Description: ECS cluster for microservices
+
+Parameters:
+
+  ClusterName:
+    Type: 'String'
+    Default: 'spring-cloud-example-cluster'
+
+  InstanceType:
+    Type: 'String'
+    Default: 't2.medium'
+
+  SSHKeyName:
+    Type: 'String'
+
+  ClusterMinSize:
+    Type: 'Number'
+    Default: 1
+
+  ClusterMaxSize:
+    Type: 'Number'
+    Default: 2
+
+  ClusterDesiredSize:
+    Type: 'Number'
+    Default: 1
+
+  VPC:
+    Type: 'AWS::EC2::VPC::Id'
+
+  PrivateSubnet1:
+    Type: 'AWS::EC2::Subnet::Id'
+
+  PrivateSubnet2:
+    Type: 'AWS::EC2::Subnet::Id'
+
+  AllowedCIDR:
+    Type: 'String'
+    Default: '0.0.0.0/0'
+
+  InternalNamespace:
+    Type: 'String'
+    Default: 'internal'
+
+
+Mappings:
+  AWSRegionToAMI:
+    ap-southeast-2:
+      AMIID: 'ami-02c73ee1100ce3e7a'
+
+Resources:
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow connections
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+      - IpProtocol: -1
+        CidrIp: !Ref AllowedCIDR
+
+  EC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [ec2.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /
+      Policies:
+      - PolicyName: ecs-service
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action: ['ecs:CreateCluster',
+                     'ecs:DeregisterContainerInstance',
+                     'ecs:DiscoverPollEndpoint',
+                     'ecs:Poll',
+                     'ecs:RegisterContainerInstance',
+                     'ecs:StartTelemetrySession',
+                     'ecs:UpdateContainerInstancesState',
+                     'ecs:Submit*',
+                     'ecr:GetAuthorizationToken',
+                     'ecr:BatchCheckLayerAvailability',
+                     'ecr:GetDownloadUrlForLayer',
+                     'ecr:BatchGetImage',
+                     'logs:CreateLogStream',
+                     'logs:PutLogEvents']
+            Resource: '*'
+
+  EC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles: [!Ref 'EC2Role']
+
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ClusterName
+
+  CloudwatchLogsGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['-', [ECSLogGroup, !Ref 'AWS::StackName']]
+      RetentionInDays: 7
+
+
+  ECSAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier:
+      - !Ref PrivateSubnet1
+      - !Ref PrivateSubnet2
+      LaunchConfigurationName: !Ref 'ContainerInstances'
+      MinSize: !Ref ClusterMinSize
+      MaxSize: !Ref ClusterMaxSize
+      DesiredCapacity: !Ref ClusterDesiredSize
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT15M
+    UpdatePolicy:
+      AutoScalingReplacingUpdate:
+        WillReplace: 'true'
+
+  ContainerInstances:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: !FindInMap [AWSRegionToAMI, !Ref 'AWS::Region', AMIID]
+      SecurityGroups: [!Ref 'SecurityGroup']
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref 'EC2InstanceProfile'
+      KeyName: !Ref SSHKeyName
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+          yum install -y aws-cfn-bootstrap
+          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
+
+  VPCPrivateDNSNamespace:
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+    Properties:
+      Description: 'Private DNS for Service Discovery'
+      Vpc: !Ref VPC
+      Name: !Ref InternalNamespace
+
+Outputs:
+  ExampleECSClusterAllowInternalSecurityGroup:
+    Value: !Ref SecurityGroup
+    Export:
+      Name: ExampleECSClusterAllowInternalSecurityGroup
+
+  ExampleECSCluster:
+    Value: !Ref ECSCluster
+    Export:
+      Name: ExampleECSCluster
+
+  ExampleECSClusterArn:
+    Value: !GetAtt ECSCluster.Arn
+    Export:
+      Name: ExampleECSClusterArn
+
+  ExampleECSClusterCloudWatchLogGroup:
+    Value: !Ref CloudwatchLogsGroup
+    Export:
+      Name: ExampleECSClusterCloudWatchLogGroup
+
+  ExampleECSClusterVPCPrivateDNSNamespace:
+    Value: !Ref VPCPrivateDNSNamespace
+    Export:
+      Name: ExampleECSClusterVPCPrivateDNSNamespace
+
+  ExampleECSClusterVPCPrivateDNSDomain:
+    Value: !Ref InternalNamespace
+    Export:
+      Name: ExampleECSClusterVPCPrivateDNSDomain
+
