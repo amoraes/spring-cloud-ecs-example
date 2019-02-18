@@ -32,7 +32,7 @@ public class ExternalWeatherService {
         if (response.getStatusCode().equals(HttpStatus.OK)) {
             Double tempInKelsius = Double.parseDouble(response.getBody().main.temp);
             Double tempInCelsius = tempInKelsius - 273.15;
-            return String.format("%.1fºC", tempInCelsius);
+            return String.format("%.1fC", tempInCelsius);
         }
         return null;
     }
