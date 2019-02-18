@@ -21,4 +21,4 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
-      defaultZone: 'http://eureka-server-1.local:8761/eureka-server/eureka,http://eureka-server-2.local:8761/eureka-server/eureka'
+      defaultZone: 'http://eureka-1.internal:8761/eureka/eureka,http://eureka-2.internal:8761/eureka/eureka'
