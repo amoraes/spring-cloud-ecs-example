@@ -26,7 +26,7 @@ public class DocumentationController implements SwaggerResourcesProvider {
 		List<SwaggerResource> resources = new ArrayList<>();
 		List<Route> routes = discoveryClientRouteLocator.getRoutes();
 		for (Route route : routes) {
-			resources.add(swaggerResource(route.getId(), route.getPrefix() + "/docs" , "2.0"));
+			resources.add(swaggerResource(route.getPrefix(), route.getPrefix() + "/docs" , "2.0"));
 		}
 		return resources;
 	}
