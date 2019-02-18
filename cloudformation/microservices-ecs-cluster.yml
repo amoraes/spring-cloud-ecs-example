@@ -15,7 +15,7 @@ Parameters:
 
   ClusterMinSize:
     Type: 'Number'
-    Default: 1
+    Default: 2
 
   ClusterMaxSize:
     Type: 'Number'
@@ -23,7 +23,7 @@ Parameters:
 
   ClusterDesiredSize:
     Type: 'Number'
-    Default: 1
+    Default: 2
 
   VPC:
     Type: 'AWS::EC2::VPC::Id'
