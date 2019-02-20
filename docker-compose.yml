@@ -13,7 +13,7 @@ services:
     - SPRING_PROFILES_ACTIVE=docker
     - JAVA_OPTIONS=-Xmx128m
     - HOST_DOMAIN=localhost.local.com
-    - server.port=8888
+    - SERVER_PORT=8888
 
   eureka:
     container_name: example-eureka
@@ -28,7 +28,7 @@ services:
     - SPRING_PROFILES_ACTIVE=docker
     - JAVA_OPTIONS=-Xmx128m
     - HOST_DOMAIN=localhost.local.com
-    - server.port=8761
+    - SERVER_PORT=8761
     - spring.cloud.config.uri=http://localhost.local.com:8888
 
   gateway:
@@ -44,7 +44,7 @@ services:
     - SPRING_PROFILES_ACTIVE=docker
     - JAVA_OPTIONS=-Xmx256m
     - HOST_DOMAIN=localhost.local.com
-    - server.port=9090
+    - SERVER_PORT=9090
     - spring.cloud.config.uri=http://localhost.local.com:8888
 
   spring-boot-admin:
@@ -60,7 +60,7 @@ services:
     - SPRING_PROFILES_ACTIVE=docker
     - JAVA_OPTIONS=-Xmx128m
     - HOST_DOMAIN=localhost.local.com
-    - server.port=9001
+    - SERVER_PORT=9001
     - spring.cloud.config.uri=http://localhost.local.com:8888
 
   zipkin:
@@ -83,7 +83,7 @@ services:
     - SPRING_PROFILES_ACTIVE=docker
     - JAVA_OPTIONS=-Xmx128m
     - HOST_DOMAIN=localhost.local.com
-    - server.port=9800
+    - SERVER_PORT=9800
     - spring.cloud.config.uri=http://localhost.local.com:8888
 
   weather-service:
@@ -99,6 +99,6 @@ services:
     - SPRING_PROFILES_ACTIVE=docker
     - JAVA_OPTIONS=-Xmx128m
     - HOST_DOMAIN=localhost.local.com
-    - server.port=9810
+    - SERVER_PORT=9810
     - spring.cloud.config.uri=http://localhost.local.com:8888
     - weather.api.key=57c74e66add4d823ad7e93285390eeb0
