@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableAdminServer
-@EnableAsync
 public class SpringBootAdminApplication {
 
     public static void main(String[] args) {
