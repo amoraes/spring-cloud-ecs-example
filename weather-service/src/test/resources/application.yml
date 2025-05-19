@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: 'weather-service'
+  config:
+    import: 'optional:configserver:'
+  cloud:
+    config:
+      uri: 'http://none'
+      fail-fast: false
+weather:
+  api:
+    url: 'http://xxx'
+    key: 'aaa'

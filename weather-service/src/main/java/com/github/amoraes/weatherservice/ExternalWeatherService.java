@@ -1,6 +1,7 @@
 package com.github.amoraes.weatherservice;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -20,8 +21,8 @@ public class ExternalWeatherService {
 
     private final RestTemplate restTemplate;
 
-    public ExternalWeatherService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public ExternalWeatherService(RestTemplateBuilder restTemplateBuilder) {
+        this.restTemplate = restTemplateBuilder.build();
     }
 
     public String getTemperatureInCelsius(String location) {

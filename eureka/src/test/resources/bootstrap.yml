@@ -1,7 +1,0 @@
-spring:
-  application:
-    name: 'eureka'
-  cloud:
-    config:
-      uri: 'http://none'
-      fail-fast: false

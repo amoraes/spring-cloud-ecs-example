@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: 'hello-service'
+  config:
+    import: 'optional:configserver:'
+  cloud:
+    config:
+      uri: 'http://none'
+      fail-fast: false

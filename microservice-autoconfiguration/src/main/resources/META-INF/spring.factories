@@ -1,7 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.github.amoraes.custommicroservicestarter.autoconfiguration.SwaggerAutoConfiguration,\
-  com.github.amoraes.custommicroservicestarter.autoconfiguration.EurekaAutoConfiguration,\
-  com.github.amoraes.custommicroservicestarter.autoconfiguration.CachingAutoConfiguration,\
-  com.github.amoraes.custommicroservicestarter.autoconfiguration.CloudConfigRetryAutoConfiguration,\
-  com.github.amoraes.custommicroservicestarter.autoconfiguration.APILoggingAutoConfiguration,\
-  com.github.amoraes.custommicroservicestarter.APILoggingInterceptor

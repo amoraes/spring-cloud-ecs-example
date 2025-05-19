@@ -1,6 +1,0 @@
-spring:
-  application:
-    name: 'eureka'
-  cloud:
-    config:
-      fail-fast: true

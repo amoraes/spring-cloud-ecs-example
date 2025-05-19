@@ -10,28 +10,74 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.0.8.RELEASE</version>
+    <version>3.4.4</version>
   </parent>
 
   <properties>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- versions -->
-    <spring-cloud.version>Finchley.RELEASE</spring-cloud.version>
-    <spring-retry.version>1.2.2.RELEASE</spring-retry.version>
-    <springfox-swagger2.version>2.8.0</springfox-swagger2.version>
+    <spring-cloud.version>2024.0.1</spring-cloud.version>
+    <springdoc.version>2.8.6</springdoc.version> <!-- Check compatibility with Spring Boot at https://github.com/springdoc/springdoc-openapi/releases -->
+    <webjars.version>0.59</webjars.version>
+    <!-- plugins -->
+    <docker-maven-plugin.version>0.46.0</docker-maven-plugin.version>
   </properties>
 
   <modules>
     <module>config-server</module>
     <module>eureka</module>
-    <module>gateway</module>
-    <module>spring-boot-admin</module>
-    <module>microservice-autoconfiguration</module>
     <module>hello-service</module>
     <module>weather-service</module>
+    <module>spring-boot-admin</module>
+    <module>gateway</module>
   </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>${springdoc.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-common</artifactId>
+        <version>${springdoc.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+        <version>${springdoc.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.webjars</groupId>
+        <artifactId>webjars-locator-core</artifactId>
+        <version>${webjars.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <version>${docker-maven-plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
 
 </project>

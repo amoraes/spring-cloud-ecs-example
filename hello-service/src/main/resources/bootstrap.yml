@@ -1,9 +1,0 @@
-application:
-  name: 'hello-service-v${application.version}'
-  version: 1
-spring:
-  application:
-    name: '${application.name}'
-  cloud:
-    config:
-      fail-fast: true

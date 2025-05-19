@@ -4,7 +4,8 @@ server:
     context-path: '/config-server'
 
 logging:
-  file: '/var/log/${spring.application.name}.log'
+  file:
+    name: '/var/log/${spring.application.name}.log'
 
 eureka:
   instance:

@@ -1,104 +1,93 @@
-version: '3'
+networks:
+  spring-boot-network:
+    driver: bridge
+
 services:
 
   # basic infrastructure
   config-server:
-    container_name: example-config-server
     image: 'amoraes/spring-cloud-ecs-example-config-server:latest'
-    network_mode: bridge
     ports:
     - '8888:8888'
     environment:
     - LOCAL_DOCKER_ENV=true
     - SPRING_PROFILES_ACTIVE=docker
     - JAVA_OPTIONS=-Xmx128m
-    - HOST_DOMAIN=localhost.local.com
     - SERVER_PORT=8888
+    networks:
+    - spring-boot-network
 
   eureka:
-    container_name: example-eureka
     image: 'amoraes/spring-cloud-ecs-example-eureka:latest'
-    network_mode: bridge
     ports:
     - '8761:8761'
     depends_on:
     - config-server
     environment:
-    - LOCAL_DOCKER_ENV=true
     - SPRING_PROFILES_ACTIVE=docker
     - JAVA_OPTIONS=-Xmx128m
-    - HOST_DOMAIN=localhost.local.com
     - SERVER_PORT=8761
-    - spring.cloud.config.uri=http://localhost.local.com:8888
-
-  gateway:
-    container_name: example-gateway
-    image: 'amoraes/spring-cloud-ecs-example-gateway:latest'
-    network_mode: bridge
-    ports:
-    - '9090:9090'
-    depends_on:
-    - eureka
-    environment:
-    - LOCAL_DOCKER_ENV=true
-    - SPRING_PROFILES_ACTIVE=docker
-    - JAVA_OPTIONS=-Xmx256m
-    - HOST_DOMAIN=localhost.local.com
-    - SERVER_PORT=9090
-    - spring.cloud.config.uri=http://localhost.local.com:8888
-
-  spring-boot-admin:
-    container_name: example-spring-boot-admin
-    image: 'amoraes/spring-cloud-ecs-example-spring-boot-admin:latest'
-    network_mode: bridge
-    ports:
-    - '9001:9001'
-    depends_on:
-    - eureka
-    environment:
-    - LOCAL_DOCKER_ENV=true
-    - SPRING_PROFILES_ACTIVE=docker
-    - JAVA_OPTIONS=-Xmx128m
-    - HOST_DOMAIN=localhost.local.com
-    - SERVER_PORT=9001
-    - spring.cloud.config.uri=http://localhost.local.com:8888
-
-  zipkin:
-    container_name: example-zipkin
-    image:   openzipkin/zipkin
-    network_mode: bridge
-    ports:
-    - 9411:9411
+    - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+    networks:
+    - spring-boot-network
 
   hello-service:
-    container_name: example-hello-service
     image: 'amoraes/spring-cloud-ecs-example-hello-service:latest'
-    network_mode: bridge
     ports:
     - '9800:9800'
     depends_on:
     - eureka
     environment:
-    - LOCAL_DOCKER_ENV=true
     - SPRING_PROFILES_ACTIVE=docker
-    - JAVA_OPTIONS=-Xmx128m
-    - HOST_DOMAIN=localhost.local.com
+    - JAVA_OPTIONS=-Xmx256m
     - SERVER_PORT=9800
-    - spring.cloud.config.uri=http://localhost.local.com:8888
+    - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+    networks:
+    - spring-boot-network
+
 
   weather-service:
-    container_name: example-weather-service
     image: 'amoraes/spring-cloud-ecs-example-weather-service:latest'
-    network_mode: bridge
     ports:
     - '9810:9810'
     depends_on:
     - eureka
     environment:
-    - LOCAL_DOCKER_ENV=true
     - SPRING_PROFILES_ACTIVE=docker
-    - JAVA_OPTIONS=-Xmx128m
-    - HOST_DOMAIN=localhost.local.com
+    - JAVA_OPTIONS=-Xmx256m
     - SERVER_PORT=9810
-    - spring.cloud.config.uri=http://localhost.local.com:8888
-    - weather.api.key=57c74e66add4d823ad7e93285390eeb0
+    - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+    networks:
+    - spring-boot-network
+
+  spring-boot-admin:
+    image: 'amoraes/spring-cloud-ecs-example-spring-boot-admin:latest'
+    ports:
+    - '9001:9001'
+    depends_on:
+    - eureka
+    environment:
+    - SPRING_PROFILES_ACTIVE=docker
+    - JAVA_OPTIONS=-Xmx256m
+    - SERVER_PORT=9001
+    - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+    networks:
+    - spring-boot-network
+
+  gateway:
+    image: 'amoraes/spring-cloud-ecs-example-gateway:latest'
+    ports:
+    - '9090:9090'
+    depends_on:
+    - eureka
+    environment:
+    - SPRING_PROFILES_ACTIVE=docker
+    - JAVA_OPTIONS=-Xmx256m
+    - SERVER_PORT=9090
+    - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+    networks:
+      - spring-boot-network
+
+
+
+
