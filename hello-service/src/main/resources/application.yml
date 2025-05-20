@@ -1,0 +1,10 @@
+application:
+  name: 'hello-service'
+spring:
+  application:
+    name: '${application.name}'
+  config:
+    import: 'configserver:'
+  cloud:
+    config:
+      fail-fast: true

@@ -1,9 +1,0 @@
-application:
-  name: 'spring-boot-admin'
-spring:
-  application:
-    name: '${application.name}'
-  cloud:
-    config:
-      uri: 'http://none'
-      fail-fast: false

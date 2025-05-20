@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/v1/weather")
 public class WeatherEndpoint {
 
     private ExternalWeatherService externalWeatherService;
@@ -15,8 +15,8 @@ public class WeatherEndpoint {
         this.externalWeatherService = externalWeatherService;
     }
 
-    @GetMapping
-    public ResponseEntity<String> weather(String location) {
+    @GetMapping("/temperature")
+    public ResponseEntity<String> temperature(String location) {
         String celsius = externalWeatherService.getTemperatureInCelsius(location);
         if (celsius != null) {
             return ResponseEntity.ok(celsius);

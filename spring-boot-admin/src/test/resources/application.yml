@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: 'spring-boot-admin'
+  config:
+    import: 'optional:configserver:'
+  cloud:
+    config:
+      uri: 'http://none'
+      fail-fast: false

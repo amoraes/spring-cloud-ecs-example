@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/greeting")
+@RequestMapping("/v1/hello")
 public class HelloEndpoint {
 
     private WeatherServiceClient weatherServiceClient;
@@ -16,7 +16,7 @@ public class HelloEndpoint {
         this.weatherServiceClient = weatherServiceClient;
     }
 
-    @GetMapping
+    @GetMapping("/greeting")
     public ResponseEntity<String> greeting(@RequestParam(name = "name", required = true) String name,
                                            @RequestParam(name = "location", required = false) String location) {
         if (location == null) {
