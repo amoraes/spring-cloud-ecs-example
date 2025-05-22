@@ -9,6 +9,35 @@ This project is based on the Spring Cloud base architecture (https://spring.io/c
 
 ![Alt text](architecture.svg)
 
+# Components
+* Spring Cloud Configuration Server (config-server): serves configuration to all services
+  based on hierarchical and profile based YAML configuration files stored in a Git repository
+
+  http://localhost:8888/anyservicename/anyprofile
+
+* Eureka (eureka): provides service registry and discovery
+
+  http://localhost:8761
+
+* Hello Service (hello-service): example greeting service
+
+  http://localhost:9800/docs
+
+* Weather Service (weather-service): example weather service connecting to a third party API using RestTemplate
+
+  http://localhost:9810/docs
+
+* Spring Boot Admin (spring-boot-admin): tools to verify current state individual microservice
+  instances, change logging levels, etc
+
+  http://localhost:9001
+
+* Spring Cloud Gateway: exposes multiple microservices for external usage, provides
+  swagger documentation
+
+  http://localhost:9090/docs
+
+
 # Building Docker Images
 
 To build docker images you can run `mvn -P docker-build clean package`.
@@ -35,33 +64,4 @@ A simple maven build will do `mvn clean package`.
     * config-server
     * eureka
     * others
-
-# Components
-* Spring Cloud Configuration Server (config-server): serves configuration to all services
-based on hierarchical and profile based YAML configuration files stored in a Git repository
-
-  http://localhost:8888/anyservicename/anyprofile
-
-* Eureka (eureka): provides service registry and discovery
-
-  http://localhost:8761
-
-* Hello Service (hello-service): example greeting service
-
-  http://localhost:9800/docs
-
-* Weather Service (weather-service): example weather service connecting to a third party API using RestTemplate
-
-  http://localhost:9810/docs
-
-* Spring Boot Admin (spring-boot-admin): tools to verify current state individual microservice
-  instances, change logging levels, etc
-
-  http://localhost:9001
-
-* Spring Cloud Gateway: exposes multiple microservices for external usage, provides
-  swagger documentation
-  
-  http://localhost:9090/docs
-
 
