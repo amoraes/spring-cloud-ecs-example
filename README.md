@@ -1,7 +1,7 @@
 Spring Cloud ECS Example
 -
 This is an example project to demonstrate the usage of Spring Cloud + ECS to implement
-microservices.
+a microservices architecture.
 
 # Architecture
 
