@@ -57,3 +57,9 @@ based on hierarchical and profile based YAML configuration files stored in a Git
   swagger documentation
   
   http://localhost:9090/docs
+
+# Architecture
+
+This project is based on the Spring Cloud base architecture (https://spring.io/cloud).
+
+![Alt text](architecture.svg)
