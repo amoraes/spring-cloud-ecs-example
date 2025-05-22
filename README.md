@@ -3,6 +3,12 @@ Spring Cloud ECS Example
 This is an example project to demonstrate the usage of Spring Cloud + ECS to implement
 microservices.
 
+# Architecture
+
+This project is based on the Spring Cloud base architecture (https://spring.io/cloud).
+
+![Alt text](architecture.svg)
+
 # Building Docker Images
 
 To build docker images you can run `mvn -P docker-build clean package`.
@@ -58,8 +64,4 @@ based on hierarchical and profile based YAML configuration files stored in a Git
   
   http://localhost:9090/docs
 
-# Architecture
 
-This project is based on the Spring Cloud base architecture (https://spring.io/cloud).
-
-![Alt text](architecture.svg)
