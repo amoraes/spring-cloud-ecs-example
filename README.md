@@ -27,16 +27,16 @@ This project is based on the Spring Cloud base architecture (https://spring.io/c
 
   http://localhost:9810/docs
 
-* Spring Boot Admin (spring-boot-admin): tools to verify current state individual microservice
-  instances, change logging levels, etc
-
-  http://localhost:9001
-
 * Spring Cloud Gateway: exposes multiple microservices for external usage, provides
   swagger documentation
 
   http://localhost:9090/docs
 
+### Extras
+* Spring Boot Admin (spring-boot-admin): tools to verify current state individual microservice
+  instances, change logging levels, etc
+
+  http://localhost:9001
 
 # Building Docker Images
 
